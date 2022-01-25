@@ -1,4 +1,4 @@
-package com.example.caculator
+package com.example.caculator.adapter
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.caculator.R
 
 class AdapterHistory(val listCacu: ArrayList<String>, val context: Context): RecyclerView.Adapter<AdapterHistory.HistoryViewHolder>() {
 

@@ -1,112 +1,8 @@
-package com.example.caculator
+package com.example.caculator.respository
 
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import android.widget.Button
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-
-    private var canAddOperation = false
-    private var canAddDecimal = false
-    private var listCacu: ArrayList<String> = ArrayList()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-    }
-
-    fun openHistory(view: View) {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.layout_history)
-        val window = dialog.window
-        if (window == null) {
-            return
-        }
-        window.setLayout(
-            (resources.displayMetrics.widthPixels * 0.90f).toInt(),
-            (resources.displayMetrics.heightPixels * 0.60f).toInt()
-        )
-        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val windowAttribute: WindowManager.LayoutParams = window.attributes
-        windowAttribute.gravity = Gravity.CENTER
-        window.attributes = windowAttribute
-        dialog.setCancelable(true)
-        val recyclerView: RecyclerView = dialog.findViewById(R.id.recyclerHistory)
-        val layoutManager = LinearLayoutManager(applicationContext)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-        recyclerView.adapter = AdapterHistory(listCacu, this)
-        dialog.show()
-    }
-
-    fun operationAction(view: View) {
-        if (view is Button && canAddOperation) {
-            workingsTV.append(view.text)
-            canAddOperation = false
-            canAddDecimal = true
-        }
-    }
-
-    fun numberAction(view: View) {
-        if (view is Button) {
-            if (view.text == ".") {
-                if (canAddDecimal)
-                    workingsTV.append(view.text)
-                canAddDecimal = false
-            } else {
-                workingsTV.append(view.text)
-                canAddDecimal = true
-            }
-            canAddOperation = true
-        }
-    }
-
-    fun allClearAction(view: View) {
-        workingsTV.text = ""
-        resultsTV.text = ""
-        canAddOperation = false
-    }
-
-    fun backSpaceAction(view: View) {
-        val length = workingsTV.length()
-        resultsTV.text = ""
-        if (length > 0) {
-            workingsTV.text = workingsTV.text.subSequence(0, length - 1)
-        }
-        if (workingsTV.text.length == 0) {
-            canAddOperation = false
-        }
-    }
-
-    fun equalsAction(view: View) {
-        resultsTV.text = calculateResults()
-        listCacu.add(0, workingsTV.text.toString() + " = " + resultsTV.text.toString())
-        if (listCacu.size > 10) {
-            listCacu.removeAt(10)
-        }
-    }
-
-    private fun calculateResults(): String {
-        val digitsOperators = digitsOperators()
-        if (digitsOperators.isEmpty()) return ""
-
-        val timesDivision = timesDivisionCalculate(digitsOperators)
-        if (timesDivision.isEmpty()) return ""
-
-        val result = addSubtractCalculate(timesDivision)
-        return result
-    }
+class CaculatorRespository {
 
     fun plus(a: String, b: String): String {
         if (a.contains("-") && b.contains("-")) {
@@ -218,7 +114,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     nho = 0
                 }
-
                 i--
                 j--
             } else {
@@ -336,7 +231,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun addSubtractCalculate(passedList: MutableList<Any>): String {
+    fun addSubtractCalculate(passedList: MutableList<Any>): String {
         var result = passedList[0].toString()
         for (i in passedList.indices) {
             if ((passedList[i].equals("+") || passedList[i].equals("-")) && i != passedList.lastIndex) {
@@ -353,7 +248,7 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
-    private fun timesDivisionCalculate(passedList: MutableList<Any>): MutableList<Any> {
+    fun timesDivisionCalculate(passedList: MutableList<Any>): MutableList<Any> {
         var list = passedList
         while (list.contains("x") || list.contains("/")) {
             list = calcTimesDiv(list)
@@ -361,7 +256,7 @@ class MainActivity : AppCompatActivity() {
         return list
     }
 
-    private fun calcTimesDiv(passedList: MutableList<Any>): MutableList<Any> {
+    fun calcTimesDiv(passedList: MutableList<Any>): MutableList<Any> {
         val newList = mutableListOf<Any>()
         var restartIndex = passedList.size
 
@@ -395,10 +290,10 @@ class MainActivity : AppCompatActivity() {
         return newList
     }
 
-    private fun digitsOperators(): MutableList<Any> {
+    fun digitsOperators(workingsTV: String): MutableList<Any> {
         val list = mutableListOf<Any>()
         var currentDigit = ""
-        for (character in workingsTV.text) {
+        for (character in workingsTV) {
             if (character.isDigit() || character == '.')
                 currentDigit += character
             else {
